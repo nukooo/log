@@ -20,6 +20,30 @@ func New(out io.Writer, format string) *Logger {
 	return &Logger{out: out, format: format}
 }
 
+func (l *Logger) SetOutput(out io.Writer) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.out = out
+}
+
+func (l *Logger) Writer() io.Writer {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return l.out
+}
+
+func (l *Logger) SetFormat(format string) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.format = format
+}
+
+func (l *Logger) Format() string {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return l.format
+}
+
 func (l *Logger) UseUTC() {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -72,6 +96,22 @@ func (l *Logger) Println(v ...interface{}) {
 }
 
 var defaultLogger = New(os.Stderr, time.RFC3339)
+
+func SetOutput(out io.Writer) {
+	defaultLogger.SetOutput(out)
+}
+
+func Writer() io.Writer {
+	return defaultLogger.Writer()
+}
+
+func SetFormat(format string) {
+	defaultLogger.SetFormat(format)
+}
+
+func Format() string {
+	return defaultLogger.Format()
+}
 
 func UseUTC() {
 	defaultLogger.UseUTC()
